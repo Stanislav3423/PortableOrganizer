@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Organizer.UI.Views.BuildingsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Organizer.UI.Views" xmlns:Convertor="clr-namespace:Organizer.UI.Convertors"
+             mc:Ignorable="d" 
+             xmlns:model="clr-namespace:Organizer.Model;assembly=Organizer.Model"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Convertor:BuildingStatusImageConverter x:Key="my:BuildingStatusImageConverter"/>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="BuildingTypeEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:BuildingType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <DataGrid Name="DataGridBuildings" AutoGenerateColumns="False" 
+                          ItemsSource="{Binding Path=Buildings}" 
+                          SelectedItem="{Binding Path=SelectedBuilding, Mode=TwoWay}"
+                          Height="350" Margin="10,10,10, 10">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=TwoWay}"/>
+                        <DataGridComboBoxColumn Header="Type"
+                                                SelectedItemBinding="{Binding Path=Type, Mode=TwoWay}"
+                                                ItemsSource="{Binding Source={StaticResource BuildingTypeEnumValues}}"/>
+                        <DataGridTextColumn Header="Home Castle" Binding="{Binding Path=HomeCastle, Mode=TwoWay}"/>
+                        <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, Mode=TwoWay}"/>
+                        <DataGridTemplateColumn Header="Status">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Width="30" Height="30" Source="{Binding Status, 
+                                        Converter={StaticResource my:BuildingStatusImageConverter}}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="15">
+            <Label>Building:</Label>
+            <Label x:Name="CreatureNameLabel" Content="{Binding SelectedBuilding.Name, Mode=OneWay}"
+                   HorizontalContentAlignment="Center" Height="28"></Label>
+            <Label>Change build status:</Label>
+            <Button x:Name="buttonBuilBuilding" Content="Build"
+                    Command="{Binding BuildingStatusCommand}" 
+                    CommandParameter="{x:Static model:BuildingStatus.Built}"
+                    Width="139"
+                    Margin="5"/>
+            <Button x:Name="buttonNotBuiltBuilding" Content="Disassemble"
+                    Command="{Binding BuildingStatusCommand}" 
+                    CommandParameter="{x:Static model:BuildingStatus.NotBuilt}"
+                    Width="139"
+                    Margin="5"/>
+            <Label>Set castle:</Label>
+            <ComboBox Name ="CastlesCombo" ItemsSource="{Binding Castles}" 
+                      SelectedItem="{Binding SelectedCastle}" 
+                      DisplayMemberPath="Name" 
+                      Width="92" 
+                      Margin="5"/>
+            <Button x:Name="addButton" Content="Set"
+                    Command="{Binding SetHomeCastleCommand}"
+                    Width="139"
+                    Margin="5"/>
+
+            <Button x:Name="deleteButton" Content="Delete"
+                    Command="{Binding ElementDeleteCommand}"
+                    CommandParameter="{Binding SelectedBuilding}"
+                    Width="70"
+                    Margin="0, 50, 0, 0"/>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

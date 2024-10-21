@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="Organizer.UI.Views.HeroesUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Organizer.UI.Views" 
+             xmlns:Convertor="clr-namespace:Organizer.UI.Convertors"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:model="clr-namespace:Organizer.Model;assembly=Organizer.Model"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="HeroClassEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:HeroClass"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="HeroSpecialityEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:HeroSpeciality"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="HeroSkillEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:HeroSkill"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <Convertor:HeroStatusImageConverter x:Key="my:HeroStatusImageConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <DataGrid Name="DataGridHeroes" AutoGenerateColumns="False" 
+                          ItemsSource="{Binding Path=Heroes}" 
+                          SelectedItem="{Binding Path=SelectedHero, Mode=TwoWay}"
+                          Height="350" Margin="10,10,10, 10">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Path=Name, Mode=TwoWay}"/>
+                        <DataGridComboBoxColumn Header="Class" 
+                                                SelectedItemBinding="{Binding Path=Class, Mode=TwoWay}"
+                                                ItemsSource="{Binding Source={StaticResource HeroClassEnumValues}}"/>
+                        <DataGridComboBoxColumn Header="Speciality" 
+                                                SelectedItemBinding="{Binding Path=Speciality, Mode=TwoWay}"
+                                                ItemsSource="{Binding Source={StaticResource HeroSpecialityEnumValues}}"/>
+                        <DataGridComboBoxColumn Header="Speciality" 
+                                                SelectedItemBinding="{Binding Path=Skill, Mode=TwoWay}"
+                                                ItemsSource="{Binding Source={StaticResource HeroSkillEnumValues}}"/>
+                        <DataGridTemplateColumn Header="Status">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Image Width="30" Height="30" Source="{Binding Status, 
+                                        Converter={StaticResource my:HeroStatusImageConverter}}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="Unit Name" Binding="{Binding UnitName}" />
+                        <DataGridTextColumn Header="Unit Number" Binding="{Binding UnitNumber}" />
+
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </ScrollViewer>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="15">
+            <Label>Hero: </Label>
+            <Label x:Name="HeroStatusLabel" Content="{Binding SelectedHero.Name, Mode=OneWay}"
+                   HorizontalContentAlignment="Center" Height="28"></Label>
+            <Label>Change game status:</Label>
+            <Button x:Name="buttonHeroInTavern" Content="In Tavern"
+                    Command="{Binding HeroStatusCommand }"
+                    CommandParameter="{x:Static model:HeroStatus.InTavern}"
+                    Width="139"
+                    Margin="5"/>
+            <Button x:Name="buttonHeroInCastle" Content="In Castle"
+                    Command="{Binding HeroStatusCommand}" 
+                    CommandParameter="{x:Static model:HeroStatus.InCastle}"
+                    Width="139"
+                    Margin="5"/>
+            <Button x:Name="buttonHeroOnMap" Content="On Map"
+                    Command="{Binding HeroStatusCommand}" 
+                    CommandParameter="{x:Static model:HeroStatus.OnMap}"
+                    Width="139"
+                    Margin="5"/>
+
+            <Button x:Name="deleteButton" Content="Delete"
+                    Command="{Binding ElementDeleteCommand}"
+                    CommandParameter="{Binding SelectedHero}"
+                    Width="70"
+                    Margin="0, 50, 0, 0"/>
+        </StackPanel>
+
+    </Grid>
+</UserControl>
